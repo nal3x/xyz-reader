@@ -1,19 +1,16 @@
 package com.example.xyzreader.ui;
 
-import android.app.Fragment;
-import android.app.FragmentManager;
-import android.app.LoaderManager;
-import android.content.Loader;
 import android.database.Cursor;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v13.app.FragmentStatePagerAdapter;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.Loader;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-import android.view.ViewGroup;
 
 import com.example.xyzreader.R;
+import com.example.xyzreader.adapter.MyPagerAdapter;
 import com.example.xyzreader.data.ArticleLoader;
 import com.example.xyzreader.data.ItemsContract;
 
@@ -38,13 +35,13 @@ public class ArticleDetailActivity extends AppCompatActivity implements LoaderMa
         }
         setContentView(R.layout.activity_article_detail);
 
-        getLoaderManager().initLoader(0, null, this);
+        getSupportLoaderManager().initLoader(0, null, this);
 
-        mPagerAdapter = new MyPagerAdapter(getFragmentManager());
-        mPager = (ViewPager) findViewById(R.id.pager);
+        mPagerAdapter = new MyPagerAdapter(getSupportFragmentManager(), mCursor);
+        mPager =  findViewById(R.id.pager);
         mPager.setAdapter(mPagerAdapter);
 
-        mPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
+        mPager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
             @Override
             public void onPageScrollStateChanged(int state) {
                 super.onPageScrollStateChanged(state);
@@ -74,7 +71,7 @@ public class ArticleDetailActivity extends AppCompatActivity implements LoaderMa
     @Override
     public void onLoadFinished(Loader<Cursor> cursorLoader, Cursor cursor) {
         mCursor = cursor;
-        mPagerAdapter.notifyDataSetChanged();
+        mPagerAdapter.swapCursor(mCursor);
 
         // Select the start ID
         if (mStartId > 0) {
@@ -95,32 +92,8 @@ public class ArticleDetailActivity extends AppCompatActivity implements LoaderMa
     @Override
     public void onLoaderReset(Loader<Cursor> cursorLoader) {
         mCursor = null;
-        mPagerAdapter.notifyDataSetChanged();
+        mPagerAdapter.swapCursor(mCursor);
     }
 
-    private class MyPagerAdapter extends FragmentStatePagerAdapter {
-        public MyPagerAdapter(FragmentManager fm) {
-            super(fm);
-        }
 
-        @Override
-        public void setPrimaryItem(ViewGroup container, int position, Object object) {
-            super.setPrimaryItem(container, position, object);
-            ArticleDetailFragment fragment = (ArticleDetailFragment) object;
-            if (fragment != null) {
-
-            }
-        }
-
-        @Override
-        public Fragment getItem(int position) {
-            mCursor.moveToPosition(position);
-            return ArticleDetailFragment.newInstance(mCursor.getLong(ArticleLoader.Query._ID));
-        }
-
-        @Override
-        public int getCount() {
-            return (mCursor != null) ? mCursor.getCount() : 0;
-        }
-    }
 }

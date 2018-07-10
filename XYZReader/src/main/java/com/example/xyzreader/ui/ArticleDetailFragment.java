@@ -1,13 +1,9 @@
 package com.example.xyzreader.ui;
 
-import android.app.Fragment;
-import android.app.LoaderManager;
 import android.content.Intent;
-import android.content.Loader;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Typeface;
-import android.graphics.drawable.ColorDrawable;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -15,7 +11,10 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.LoaderManager;
 import android.support.v4.app.ShareCompat;
+import android.support.v4.content.Loader;
 import android.support.v7.graphics.Palette;
 import android.text.Html;
 import android.text.format.DateUtils;
@@ -31,6 +30,8 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.ImageLoader;
 import com.example.xyzreader.R;
 import com.example.xyzreader.data.ArticleLoader;
+
+import static com.example.xyzreader.data.ArticleLoader.newInstanceForItemId;
 
 /**
  * A fragment representing a single Article detail screen. This fragment is
@@ -48,14 +49,9 @@ public class ArticleDetailFragment extends Fragment implements LoaderManager.Loa
     private int mMutedColor = 0xFF333333;
     private ObservableScrollView mScrollView;
     private DrawInsetsFrameLayout mDrawInsetsFrameLayout;
-    private ColorDrawable mStatusBarColorDrawable;
 
-    private int mTopInset;
     private View mPhotoContainerView;
     private ImageView mPhotoView;
-    private int mScrollY;
-    private boolean mIsCard = false;
-    private int mStatusBarFullOpacityBottom;
 
     private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.sss");
     // Use default locale format
@@ -70,7 +66,7 @@ public class ArticleDetailFragment extends Fragment implements LoaderManager.Loa
     public ArticleDetailFragment() {
     }
 
-    public static ArticleDetailFragment newInstance(long itemId) {
+    public static Fragment newInstance(long itemId) {
         Bundle arguments = new Bundle();
         arguments.putLong(ARG_ITEM_ID, itemId);
         ArticleDetailFragment fragment = new ArticleDetailFragment();
@@ -86,9 +82,6 @@ public class ArticleDetailFragment extends Fragment implements LoaderManager.Loa
             mItemId = getArguments().getLong(ARG_ITEM_ID);
         }
 
-        mIsCard = getResources().getBoolean(R.bool.detail_is_card);
-        mStatusBarFullOpacityBottom = getResources().getDimensionPixelSize(
-                R.dimen.detail_card_top_margin);
         setHasOptionsMenu(true);
     }
 
@@ -108,16 +101,12 @@ public class ArticleDetailFragment extends Fragment implements LoaderManager.Loa
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         mRootView = inflater.inflate(R.layout.fragment_article_detail, container, false);
-        mDrawInsetsFrameLayout = (DrawInsetsFrameLayout)
-                mRootView.findViewById(R.id.draw_insets_frame_layout);
+        mDrawInsetsFrameLayout = mRootView.findViewById(R.id.draw_insets_frame_layout);
 
+        mScrollView = mRootView.findViewById(R.id.scrollview);
 
-        mScrollView = (ObservableScrollView) mRootView.findViewById(R.id.scrollview);
-
-        mPhotoView = (ImageView) mRootView.findViewById(R.id.photo);
+        mPhotoView = mRootView.findViewById(R.id.photo);
         mPhotoContainerView = mRootView.findViewById(R.id.photo_container);
-
-        mStatusBarColorDrawable = new ColorDrawable(0);
 
         mRootView.findViewById(R.id.share_fab).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -149,18 +138,15 @@ public class ArticleDetailFragment extends Fragment implements LoaderManager.Loa
             return;
         }
 
-        TextView titleView = (TextView) mRootView.findViewById(R.id.article_title);
-        TextView bylineView = (TextView) mRootView.findViewById(R.id.article_byline);
+        TextView titleView = mRootView.findViewById(R.id.article_title);
+        TextView bylineView = mRootView.findViewById(R.id.article_byline);
         bylineView.setMovementMethod(new LinkMovementMethod());
-        TextView bodyView = (TextView) mRootView.findViewById(R.id.article_body);
-
+        TextView bodyView = mRootView.findViewById(R.id.article_body);
 
         bodyView.setTypeface(Typeface.createFromAsset(getResources().getAssets(), "Rosario-Regular.ttf"));
 
         if (mCursor != null) {
-            mRootView.setAlpha(0);
             mRootView.setVisibility(View.VISIBLE);
-            mRootView.animate().alpha(1);
             titleView.setText(mCursor.getString(ArticleLoader.Query.TITLE));
             Date publishedDate = parsePublishedDate();
             if (!publishedDate.before(START_OF_EPOCH.getTime())) {
@@ -182,6 +168,7 @@ public class ArticleDetailFragment extends Fragment implements LoaderManager.Loa
 
             }
             bodyView.setText(Html.fromHtml(mCursor.getString(ArticleLoader.Query.BODY).replaceAll("(\r\n|\n)", "<br />")));
+            //TODO: Picasso
             ImageLoaderHelper.getInstance(getActivity()).getImageLoader()
                     .get(mCursor.getString(ArticleLoader.Query.PHOTO_URL), new ImageLoader.ImageListener() {
                         @Override
@@ -211,7 +198,7 @@ public class ArticleDetailFragment extends Fragment implements LoaderManager.Loa
 
     @Override
     public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
-        return ArticleLoader.newInstanceForItemId(getActivity(), mItemId);
+        return newInstanceForItemId(getActivity(), mItemId);
     }
 
     @Override

@@ -25,7 +25,7 @@ import java.text.ParseException;
 import java.util.GregorianCalendar;
 
 
-public class ArticleListAdapter extends RecyclerView.Adapter<ViewHolder> {
+public class ArticleListAdapter extends RecyclerView.Adapter<ArticleListAdapter.ViewHolder> {
     private Cursor mCursor;
     private Context mContext;
     private final static String TAG = ArticleListAdapter.class.getSimpleName();
@@ -34,7 +34,7 @@ public class ArticleListAdapter extends RecyclerView.Adapter<ViewHolder> {
     // Use default locale format
     private SimpleDateFormat outputFormat = new SimpleDateFormat();
     // Most time functions can only handle 1902 - 2037
-    private GregorianCalendar START_OF_EPOCH = new GregorianCalendar(2,1,1);
+    private GregorianCalendar START_OF_EPOCH = new GregorianCalendar(2, 1, 1);
 
     public ArticleListAdapter(Cursor cursor, Context context) {
         mCursor = cursor;
@@ -61,16 +61,6 @@ public class ArticleListAdapter extends RecyclerView.Adapter<ViewHolder> {
         return vh;
     }
 
-    private Date parsePublishedDate() {
-        try {
-            String date = mCursor.getString(ArticleLoader.Query.PUBLISHED_DATE);
-            return dateFormat.parse(date);
-        } catch (ParseException ex) {
-            Log.e(TAG, ex.getMessage());
-            Log.i(TAG, "passing today's date");
-            return new Date();
-        }
-    }
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
@@ -92,6 +82,8 @@ public class ArticleListAdapter extends RecyclerView.Adapter<ViewHolder> {
                             + "<br/>" + " by "
                             + mCursor.getString(ArticleLoader.Query.AUTHOR)));
         }
+
+        //TODO: Picasso
         holder.thumbnailView.setImageUrl(
                 mCursor.getString(ArticleLoader.Query.THUMB_URL),
                 ImageLoaderHelper.getInstance(mContext).getImageLoader());
@@ -102,9 +94,8 @@ public class ArticleListAdapter extends RecyclerView.Adapter<ViewHolder> {
     public int getItemCount() {
         return mCursor.getCount();
     }
-}
 
-    class ViewHolder extends RecyclerView.ViewHolder {
+    static class ViewHolder extends RecyclerView.ViewHolder {
         public DynamicHeightNetworkImageView thumbnailView;
         public TextView titleView;
         public TextView subtitleView;
@@ -115,4 +106,16 @@ public class ArticleListAdapter extends RecyclerView.Adapter<ViewHolder> {
             titleView = (TextView) view.findViewById(R.id.article_title);
             subtitleView = (TextView) view.findViewById(R.id.article_subtitle);
         }
+    }
+
+    private Date parsePublishedDate() {
+        try {
+            String date = mCursor.getString(ArticleLoader.Query.PUBLISHED_DATE);
+            return dateFormat.parse(date);
+        } catch (ParseException ex) {
+            Log.e(TAG, ex.getMessage());
+            Log.i(TAG, "passing today's date");
+            return new Date();
+        }
+    }
 }
