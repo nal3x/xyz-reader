@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.text.SimpleDateFormat;
@@ -18,8 +19,7 @@ import java.util.Date;
 import com.example.xyzreader.R;
 import com.example.xyzreader.data.ArticleLoader;
 import com.example.xyzreader.data.ItemsContract;
-import com.example.xyzreader.ui.DynamicHeightNetworkImageView;
-import com.example.xyzreader.ui.ImageLoaderHelper;
+import com.squareup.picasso.Picasso;
 
 import java.text.ParseException;
 import java.util.GregorianCalendar;
@@ -83,11 +83,12 @@ public class ArticleListAdapter extends RecyclerView.Adapter<ArticleListAdapter.
                             + mCursor.getString(ArticleLoader.Query.AUTHOR)));
         }
 
-        //TODO: Picasso
-        holder.thumbnailView.setImageUrl(
-                mCursor.getString(ArticleLoader.Query.THUMB_URL),
-                ImageLoaderHelper.getInstance(mContext).getImageLoader());
-        holder.thumbnailView.setAspectRatio(mCursor.getFloat(ArticleLoader.Query.ASPECT_RATIO));
+        //TODO: ASPECT RATIO? holder.thumbnailView.setAspectRatio(mCursor.getFloat(ArticleLoader.Query.ASPECT_RATIO));
+        Picasso.get().
+                load(mCursor.getString(ArticleLoader.Query.THUMB_URL)).
+                resize(100, 100).
+                centerCrop().
+                into(holder.thumbnailView);
     }
 
     @Override
@@ -96,15 +97,15 @@ public class ArticleListAdapter extends RecyclerView.Adapter<ArticleListAdapter.
     }
 
     static class ViewHolder extends RecyclerView.ViewHolder {
-        public DynamicHeightNetworkImageView thumbnailView;
+        public ImageView thumbnailView;
         public TextView titleView;
         public TextView subtitleView;
 
         public ViewHolder(View view) {
             super(view);
-            thumbnailView = (DynamicHeightNetworkImageView) view.findViewById(R.id.thumbnail);
-            titleView = (TextView) view.findViewById(R.id.article_title);
-            subtitleView = (TextView) view.findViewById(R.id.article_subtitle);
+            thumbnailView = view.findViewById(R.id.thumbnail);
+            titleView = view.findViewById(R.id.article_title);
+            subtitleView = view.findViewById(R.id.article_subtitle);
         }
     }
 
