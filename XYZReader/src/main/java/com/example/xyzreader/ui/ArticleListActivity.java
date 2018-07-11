@@ -10,6 +10,7 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
@@ -33,6 +34,7 @@ public class ArticleListActivity extends AppCompatActivity implements LoaderMana
     private Toolbar mToolbar;
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private RecyclerView mRecyclerView;
+    private boolean mIsRefreshing = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,9 +42,8 @@ public class ArticleListActivity extends AppCompatActivity implements LoaderMana
         setContentView(R.layout.activity_article_list);
 
         mToolbar = findViewById(R.id.toolbar);
-
-        final View toolbarContainerView = findViewById(R.id.toolbar_container);
-
+        //setSupportActionBar(mToolbar);
+        //final View toolbarContainerView = findViewById(R.id.toolbar_container);
         mSwipeRefreshLayout = findViewById(R.id.swipe_refresh_layout);
 
         mRecyclerView = findViewById(R.id.recycler_view);
@@ -60,8 +61,7 @@ public class ArticleListActivity extends AppCompatActivity implements LoaderMana
     @Override
     protected void onStart() {
         super.onStart();
-        registerReceiver(mRefreshingReceiver,
-                new IntentFilter(UpdaterService.BROADCAST_ACTION_STATE_CHANGE));
+        registerReceiver(mRefreshingReceiver, new IntentFilter(UpdaterService.BROADCAST_ACTION_STATE_CHANGE));
     }
 
     @Override
@@ -70,7 +70,6 @@ public class ArticleListActivity extends AppCompatActivity implements LoaderMana
         unregisterReceiver(mRefreshingReceiver);
     }
 
-    private boolean mIsRefreshing = false;
 
     private BroadcastReceiver mRefreshingReceiver = new BroadcastReceiver() {
         @Override
@@ -97,9 +96,9 @@ public class ArticleListActivity extends AppCompatActivity implements LoaderMana
         adapter.setHasStableIds(true);
         mRecyclerView.setAdapter(adapter);
         int columnCount = getResources().getInteger(R.integer.list_column_count);
-        StaggeredGridLayoutManager sglm =
-                new StaggeredGridLayoutManager(columnCount, StaggeredGridLayoutManager.VERTICAL);
-        mRecyclerView.setLayoutManager(sglm);
+        GridLayoutManager layoutManager =
+                new GridLayoutManager(this, columnCount);
+        mRecyclerView.setLayoutManager(layoutManager);
     }
 
     @Override

@@ -86,8 +86,6 @@ public class ArticleListAdapter extends RecyclerView.Adapter<ArticleListAdapter.
         //TODO: ASPECT RATIO? holder.thumbnailView.setAspectRatio(mCursor.getFloat(ArticleLoader.Query.ASPECT_RATIO));
         Picasso.get().
                 load(mCursor.getString(ArticleLoader.Query.THUMB_URL)).
-                resize(100, 100).
-                centerCrop().
                 into(holder.thumbnailView);
     }
 

@@ -38,23 +38,8 @@ public class ArticleDetailActivity extends AppCompatActivity implements LoaderMa
         getSupportLoaderManager().initLoader(0, null, this);
 
         mPagerAdapter = new MyPagerAdapter(getSupportFragmentManager(), mCursor);
-        mPager =  findViewById(R.id.pager);
+        mPager = findViewById(R.id.pager);
         mPager.setAdapter(mPagerAdapter);
-
-        mPager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
-            @Override
-            public void onPageScrollStateChanged(int state) {
-                super.onPageScrollStateChanged(state);
-            }
-
-            @Override
-            public void onPageSelected(int position) {
-                if (mCursor != null) {
-                    mCursor.moveToPosition(position);
-                }
-
-            }
-        });
 
         if (savedInstanceState == null) {
             if (getIntent() != null && getIntent().getData() != null) {
@@ -76,7 +61,6 @@ public class ArticleDetailActivity extends AppCompatActivity implements LoaderMa
         // Select the start ID
         if (mStartId > 0) {
             mCursor.moveToFirst();
-            // TODO: optimize
             while (!mCursor.isAfterLast()) {
                 if (mCursor.getLong(ArticleLoader.Query._ID) == mStartId) {
                     final int position = mCursor.getPosition();
