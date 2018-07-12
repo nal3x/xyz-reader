@@ -13,7 +13,6 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.View;
@@ -61,6 +60,7 @@ public class ArticleListActivity extends AppCompatActivity implements LoaderMana
         mRecyclerView = findViewById(R.id.recycler_view);
         getSupportLoaderManager().initLoader(0, null, this);
 
+        //Comment to let user manually refresh by swiping
         if (savedInstanceState == null) {
             refresh();
         }
@@ -122,8 +122,7 @@ public class ArticleListActivity extends AppCompatActivity implements LoaderMana
         adapter.setHasStableIds(true);
         mRecyclerView.setAdapter(adapter);
         int columnCount = getResources().getInteger(R.integer.list_column_count);
-        GridLayoutManager layoutManager =
-                new GridLayoutManager(this, columnCount);
+        GridLayoutManager layoutManager = new GridLayoutManager(this, columnCount);
         mRecyclerView.setLayoutManager(layoutManager);
     }
 

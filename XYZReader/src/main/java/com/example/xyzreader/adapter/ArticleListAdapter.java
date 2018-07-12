@@ -83,7 +83,7 @@ public class ArticleListAdapter extends RecyclerView.Adapter<ArticleListAdapter.
                             + mCursor.getString(ArticleLoader.Query.AUTHOR)));
         }
 
-        //TODO: ASPECT RATIO? holder.thumbnailView.setAspectRatio(mCursor.getFloat(ArticleLoader.Query.ASPECT_RATIO));
+        //holder.thumbnailView.setAspectRatio(mCursor.getFloat(ArticleLoader.Query.ASPECT_RATIO));
         Picasso.get().
                 load(mCursor.getString(ArticleLoader.Query.THUMB_URL)).
                 into(holder.thumbnailView);
