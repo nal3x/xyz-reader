@@ -44,7 +44,7 @@ public class ArticleDetailFragment extends Fragment implements LoaderManager.Loa
     private long mItemId;
     private View mRootView;
     private ObservableScrollView mScrollView;
-    private DrawInsetsFrameLayout mDrawInsetsFrameLayout;
+    private View mDrawInsetsFrameLayout;
 
     private View mPhotoContainerView;
     private ImageView mPhotoView;
@@ -118,17 +118,6 @@ public class ArticleDetailFragment extends Fragment implements LoaderManager.Loa
         return mRootView;
     }
 
-    private Date parsePublishedDate() {
-        try {
-            String date = mCursor.getString(ArticleLoader.Query.PUBLISHED_DATE);
-            return dateFormat.parse(date);
-        } catch (ParseException ex) {
-            Log.e(TAG, ex.getMessage());
-            Log.i(TAG, "passing today's date");
-            return new Date();
-        }
-    }
-
     private void bindViews() {
         if (mRootView == null) {
             return;
@@ -171,6 +160,17 @@ public class ArticleDetailFragment extends Fragment implements LoaderManager.Loa
             titleView.setText("N/A");
             bylineView.setText("N/A" );
             bodyView.setText("N/A");
+        }
+    }
+
+    private Date parsePublishedDate() {
+        try {
+            String date = mCursor.getString(ArticleLoader.Query.PUBLISHED_DATE);
+            return dateFormat.parse(date);
+        } catch (ParseException ex) {
+            Log.e(TAG, ex.getMessage());
+            Log.i(TAG, "passing today's date");
+            return new Date();
         }
     }
 

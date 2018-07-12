@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -14,7 +15,9 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
 import android.view.View;
+import android.widget.TextView;
 
 import com.example.xyzreader.R;
 import com.example.xyzreader.adapter.ArticleListAdapter;
@@ -42,9 +45,18 @@ public class ArticleListActivity extends AppCompatActivity implements LoaderMana
         setContentView(R.layout.activity_article_list);
 
         mToolbar = findViewById(R.id.toolbar);
-        //setSupportActionBar(mToolbar);
+        setSupportActionBar(mToolbar);
         //final View toolbarContainerView = findViewById(R.id.toolbar_container);
         mSwipeRefreshLayout = findViewById(R.id.swipe_refresh_layout);
+        // to hide the title on the ActionBar
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+
+        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                refresh();
+            }
+        });
 
         mRecyclerView = findViewById(R.id.recycler_view);
         getSupportLoaderManager().initLoader(0, null, this);
@@ -52,10 +64,24 @@ public class ArticleListActivity extends AppCompatActivity implements LoaderMana
         if (savedInstanceState == null) {
             refresh();
         }
+
     }
 
     private void refresh() {
         startService(new Intent(this, UpdaterService.class));
+        //creating snackbar with accent colored text
+        Snackbar sb = Snackbar.make(findViewById(R.id.main_content),"Refreshing your books collection",Snackbar.LENGTH_SHORT);
+        View sbView = sb.getView();
+        TextView textView = sbView.findViewById(android.support.design.R.id.snackbar_text);
+        textView.setTextColor(getResources().getColor(R.color.teal_accent));
+        sb.show();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.main, menu);
+        return true;
     }
 
     @Override
